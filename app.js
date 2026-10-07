@@ -142,7 +142,7 @@ mongoose
     serverSelectionTimeoutMS: 10000,
   })
   .then(() => {
-    console.log("MongoDB Connected Successfully");
+    console.log("mutiu MongoDB Connected Successfully");
 
     app.listen(PORT, () => {
       console.log(
