@@ -99,9 +99,15 @@ const db = config.get("mongoURI");
 
 // Connect to MongoDB - Deprecated connection options removed
 mongoose
-  .connect(db)
-  .then(() => console.log(`MongoDb Connected`.bgGreen.bold))
-  .catch((err) => console.log(err));
+  .connect(db, {
+    serverSelectionTimeoutMS: 10000,
+  })
+  .then(() => {
+    console.log("MongoDB Connected Successfully");
+  })
+  .catch((err) => {
+    console.error("MongoDB Connection Error:", err);
+  });
 /////
 app.use(express.json());
 app.use("/api/auth", authRoutes);
