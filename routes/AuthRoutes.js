@@ -41,34 +41,62 @@ router.post("/", async (req, res) => {
 });
 
 /////login
+
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
 
-    if (!user) {
-      return res.status(400).json({ error: "Invalid User" });
+    // Validate the request body
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide both email and password.",
+      });
     }
 
+    // Find the user
+    const user = await User.findOne({
+      email: email.trim().toLowerCase(),
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password.",
+      });
+    }
+
+    // Confirm the password matches the stored bcrypt hash
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(400).json({ error: "Password doesn't match" });
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password.",
+      });
     }
 
-    res.status(200).json({
-      // token: generateToken(user._id),
+    // Successful login
+    return res.status(200).json({
+      success: true,
+      message: "Login successful. Welcome onboard!",
       _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
-
       isAdmin: user.isAdmin,
       email: user.email,
     });
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
+  } catch (err) {
+    // Check your backend terminal or hosting logs for this error
+    console.error("LOGIN ROUTE ERROR:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "A server error occurred during login.",
+    });
   }
 });
+
 //LOGIN
 router.post("/logins", async (req, res) => {
   try {
